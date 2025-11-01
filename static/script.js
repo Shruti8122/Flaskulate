@@ -1,52 +1,103 @@
-const a = document.getElementById('num1');
-const b = document.getElementById('num2');
+const expressionDisplay = document.getElementById('expression');
+const resultDisplay = document.getElementById('result');
+const keypad = document.querySelector('.keypad-grid');
 
-const butns = document.querySelectorAll('.butn');
-const value = document.getElementById('ans');
+let firstOperand = null;
+let operator = null;
+let waitingForSecondOperand = false;
+let expression = '';
 
-butns.forEach(function(butn){
-    butn.addEventListener('click', function(e){
+function performCalculation(op, num1, num2) {
+  switch (op) {
+    case '+': return num1 + num2;
+    case '-': return num1 - num2;
+    case '*': return num1 * num2;
+    case '/': return num2 === 0 ? 'Error: Div by 0' : num1 / num2;
+    case '**': return Math.pow(num1, num2);
+    default: return num2;
+  }
+}
 
-        const styles = e.currentTarget.classList;
-        
-        if(styles.contains('RESET')){
-            value.textContent = "THE OUTPUT";
-            a.value = '';
-            b.value = '';
-            return; 
-        }
-        
-        const num1Str = a.value;
-        const num2Str = b.value;
-        
-        const num1 = parseFloat(num1Str);
-        const num2 = parseFloat(num2Str);
+function allClear() {
+  resultDisplay.textContent = '0';
+  expressionDisplay.textContent = '';
+  firstOperand = null;
+  operator = null;
+  waitingForSecondOperand = false;
+  expression = '';
+}
 
-        let result;
+function clearEntry() {
+  let currentValue = resultDisplay.textContent;
+  if (currentValue === '0' || currentValue.startsWith('Error')) return;
+  currentValue = currentValue.slice(0, -1);
+  resultDisplay.textContent = currentValue === '' || currentValue === '-' ? '0' : currentValue;
+}
 
-        if (!Number.isFinite(num1) || !Number.isFinite(num2)){
-            value.textContent = "INVALID INPUT. Please enter valid numbers.";
-            return;
-        }
+function inputDigit(digit) {
+  if (waitingForSecondOperand) {
+    resultDisplay.textContent = digit;
+    waitingForSecondOperand = false;
+  } else {
+    if (digit === '.' && resultDisplay.textContent.includes('.')) return;
+    resultDisplay.textContent =
+      resultDisplay.textContent === '0' && digit !== '.'
+        ? digit
+        : resultDisplay.textContent + digit;
+  }
+}
 
-        if(styles.contains('ADD')){
-            result = num1 + num2;
-        } else if(styles.contains('SUB')){
-            result = num1 - num2;
-        } else if(styles.contains('MUL')){
-            result = num1 * num2;
-        } else if(styles.contains('DIV')){
-            if(num2 === 0){
-                value.textContent = "Error: Cannot divide by ZERO";
-                return;
-            }
-            result = num1 / num2;
-        } else if(styles.contains('POWER')){
-            result = Math.pow(num1, num2);
-        } else {
-            value.textContent = "TRY AGAIN LATER !";
-            return;
-        }
-        value.textContent = result;
-    });
+function handleOperator(nextOperator) {
+  const inputValue = parseFloat(resultDisplay.textContent);
+  if (isNaN(inputValue)) return;
+
+  if (operator && !waitingForSecondOperand) {
+    let result = performCalculation(operator, firstOperand, inputValue);
+    if (typeof result === 'string') {
+      resultDisplay.textContent = result;
+      firstOperand = null;
+      operator = null;
+      waitingForSecondOperand = false;
+      expression = '';
+      expressionDisplay.textContent = '';
+      return;
+    }
+    const formatted = parseFloat(result.toFixed(10).replace(/\.?0+$/, ''));
+    resultDisplay.textContent = formatted;
+    firstOperand = formatted;
+  } else {
+    firstOperand = inputValue;
+  }
+
+  waitingForSecondOperand = true;
+  operator = nextOperator;
+  if (nextOperator)
+    expression += `${inputValue} ${nextOperator} `;
+  else
+    expression += `${inputValue} =`;
+
+  expressionDisplay.textContent = expression;
+}
+
+keypad.addEventListener('click', (e) => {
+  const target = e.target;
+  if (!target.matches('button')) return;
+
+  const value = target.dataset.value;
+  const op = target.dataset.op;
+  const action = target.dataset.action;
+
+  if (value) return inputDigit(value);
+  if (op) return handleOperator(op);
+
+  if (action === 'calculate') {
+    if (firstOperand === null || operator === null) return;
+    handleOperator(null);
+    operator = null;
+    waitingForSecondOperand = false;
+    return;
+  }
+
+  if (action === 'clear') return allClear();
+  if (action === 'reset') return clearEntry();
 });

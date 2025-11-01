@@ -1,27 +1,48 @@
 <!DOCTYPE html>
-<html>
-    <head>
-        <title>CALCULATOR</title>
-        <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}"/>
-    </head>
-    <body>
-        <h1 class="heading">CALCULATOR</h1>
-        <div class="container">
-            NUMBER 1: <input type="number" name="num1" value="num1" id="num1" />
-            <br><br>
-            NUMBER 2 :
-            <input type="number" name="num2" value="num2" id="num2"/>
-            <br>
-            <br>
-            <button class="butn ADD">ADD</button>
-            <button class="butn SUB">SUB</button>
-            <button class="butn MUL">MUL</button>
-            <button class="butn DIV">DIV</button>
-            <button class="butn POWER">POWER</button>
-            <button class="butn RESET">RESET</button>
-            <br>
-            <p id="ans">THE OUTPUT</p>
-        </div>
-        <script src="{{ url_for('static', filename='script.js') }}"></script>
-    </body>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Advanced Calculator</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <h1 class="heading">CALCULATOR</h1>
+
+  <div class="container">
+    <div id="display">
+      <div id="expression"></div>
+      <div id="result">0</div>
+    </div>
+
+    <div class="keypad-grid">
+      <button class="butn function-btn" data-action="clear">AC</button>
+      <button class="butn reset-btn" data-action="reset">C</button>
+      <button class="butn equals-btn" data-action="calculate">=</button>
+
+      <button class="butn digit-btn" data-value="7">7</button>
+      <button class="butn digit-btn" data-value="8">8</button>
+      <button class="butn digit-btn" data-value="9">9</button>
+      <button class="butn operator-btn" data-op="*">×</button>
+
+      <button class="butn digit-btn" data-value="4">4</button>
+      <button class="butn digit-btn" data-value="5">5</button>
+      <button class="butn digit-btn" data-value="6">6</button>
+      <button class="butn operator-btn" data-op="-">−</button>
+
+      <button class="butn digit-btn" data-value="1">1</button>
+      <button class="butn digit-btn" data-value="2">2</button>
+      <button class="butn digit-btn" data-value="3">3</button>
+      <button class="butn operator-btn" data-op="+">+</button>
+
+      <button class="butn digit-btn decimal-btn" data-value=".">.</button>
+      <button class="butn digit-btn" data-value="0">0</button>
+      <button class="butn operator-btn" data-op="**">xʸ</button>
+      <button class="butn operator-btn" data-op="/">÷</button>
+    </div>
+  </div>
+
+  <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
 </html>
